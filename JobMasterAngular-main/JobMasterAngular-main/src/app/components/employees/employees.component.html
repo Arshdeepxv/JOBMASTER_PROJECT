@@ -1,0 +1,163 @@
+<div class="container mx-auto mt-8">
+  <div class="flex items-center justify-between mb-4 ml-5">
+    <div class="flex items-center">
+      <h1 class="text-lg font-bold mr-2 sm:text-xl md:text-2xl lg:text-3xl">Empleados</h1>
+      <div class="border-l h-6 mr-2"></div>
+      <div class="text-sm text-gray-500">{{ employees.length }} Trabajadores</div>
+    </div>
+    <div class="flex ml-auto mr-8">
+      <button routerLink="/employees/add_employee" class="flex items-center bg-gray-200 hover:bg-green-400 px-2 py-1 rounded-lg mr-2">
+        <i class='bx bxs-user-plus text-xl'></i>
+        <span class="ml-1">Añadir</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isError" class="bg-white rounded-xl shadow-lg p-4 ml-5 mr-5 overflow-x-auto border border-green-400">
+    <div class="text-red-600 font-bold mb-4">
+      Error al cargar las incidencias. Por favor, inténtelo de nuevo más tarde.
+    </div>
+  </div>
+
+  <div *ngIf="!isError" class="bg-white rounded-xl shadow-lg p-4 ml-5 mr-5 overflow-x-auto border border-green-400">
+    <div class="w-full overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Foto</th>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Nombre</th>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Email</th>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Teléfono</th>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">País</th>
+            <th scope="col" class="text-center px-4 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Acción</th>
+          </tr>
+        </thead>
+        <!-- Data employees -->
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let employee of employees; let i = index" class="transition-all hover:bg-gray-100 hover:shadow-lg">
+            <td class="text-center px-4 py-2 whitespace-nowrap">
+              <div class="rounded-full overflow-hidden border border-gray-300 h-8 w-8 mx-auto">
+                <img [src]="employee.photo" alt="Foto de {{ employee.name }}" class="h-full w-full object-cover" width="25" height="25">
+              </div>
+            </td>
+            <td class="text-center px-4 py-2 whitespace-nowrap">{{ employee.name }} {{ employee.surname }}</td>
+            <td class="text-center px-4 py-2 whitespace-nowrap">{{ employee.email }}</td>
+            <td class="text-center px-4 py-2 whitespace-nowrap">{{ employee.telephone }}</td>
+            <td class="text-center px-4 py-2 whitespace-nowrap">{{ employee.country }}</td>
+            <td class="text-center px-4 py-2 whitespace-nowrap">
+              <button (click)="openEmployeeModal(employee)">
+                <i class='bx bxs-show text-xl mr-2'></i>
+              </button>
+              <a [routerLink]="['/employees/edit_employee', employee.id]">
+                <i class='bx bx-edit text-xl text-black mr-2'></i>
+              </a>
+              <button (click)="openDeleteModal(employee.id)">
+                <i class='bx bx-trash text-xl text-red-600'></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<!-- Modal Details Employees -->
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 sm:p-6" *ngIf="selectedEmployee.length>0">
+  <div *ngFor="let employee of selectedEmployee; let i = index" class="bg-white rounded-xl shadow-lg p-4 sm:p-6 w-full max-w-md md:max-w-lg lg:max-w-2xl">
+    <!-- Encabezado del modal-->
+    <div class="flex items-center justify-center mb-4">
+      <div class="flex-shrink-0 mr-4">
+        <div class="rounded-full overflow-hidden bg-gray-200 p-1">
+          <img [src]="employee.photo" alt="Foto de {{ employee.name}}" class="h-16 w-16 object-cover rounded-full">
+        </div>
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold text-black">{{ employee.name }} {{ employee.surname }}</h2>
+    </div>
+
+    <div class="flex items-center justify-center mb-4">
+      <div class="border-b border-gray-300 flex-grow mr-4"></div>
+      <div class="text-gray-500">Datos Personales</div>
+      <div class="border-b border-gray-300 flex-grow ml-4"></div>
+    </div>
+
+    <!-- Section personal data -->
+    <div class="mb-4 text-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="col-span-1">
+        <p class="text-sm"><strong>NIF</strong></p>
+        <p class="text-gray-900">{{ employee.users?.nif }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Fecha de Nacimiento</strong></p>
+        <p class="text-gray-900">{{ employee.date_of_birth }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Género</strong></p>
+        <p class="text-gray-900">{{ employee.gender === 'male' ? 'Masculino' : 'Femenino' }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Nacionalidad</strong></p>
+        <p class="text-gray-900">{{ employee.country }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center mb-4">
+      <div class="border-b border-gray-300 flex-grow mr-4"></div>
+      <div class="text-gray-500">Contacto</div>
+      <div class="border-b border-gray-300 flex-grow ml-4"></div>
+    </div>
+
+    <!-- Section Contact -->
+    <div class="mb-4 text-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Email</strong></p>
+        <p class="text-gray-900">{{ employee.email }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Teléfono</strong></p>
+        <p class="text-gray-900">{{ employee.telephone }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center mb-4">
+      <div class="border-b border-gray-300 flex-grow mr-4"></div>
+      <div class="text-gray-500">Dirección</div>
+      <div class="border-b border-gray-300 flex-grow ml-4"></div>
+    </div>
+
+    <!-- Section  Address -->
+    <div class="mb-4 text-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Dirección</strong></p>
+        <p class="text-gray-900">{{ employee.addresses?.street }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Ciudad</strong></p>
+        <p class="text-gray-900">{{ employee.addresses?.city }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>Código Postal</strong></p>
+        <p class="text-gray-900">{{ employee.addresses?.postal_code?.toString()?.length === 4 ? '0' + employee.addresses?.postal_code : employee.addresses?.postal_code }}</p>
+      </div>
+      <div class="col-span-1">
+        <p class="text-sm"><strong>País</strong></p>
+        <p class="text-gray-900">{{ employee.country }}</p>
+      </div>
+    </div>
+    <!-- Button Close -->
+    <button class="bg-green-400 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full w-full" (click)="closeEmployeeModal()">Cerrar</button>
+  </div>
+</div>
+
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+<app-delete-confirmation-modal
+  [showConfirmationModal]="showDeleteModal"
+  (closeModalEvent)="closeDeleteModal()"
+  (confirmDelete)="confirmDeletion()">
+</app-delete-confirmation-modal>
+
+<app-success-alert
+  *ngIf="showSuccessAlert"
+  [message]="successMessage">
+</app-success-alert>
+
+

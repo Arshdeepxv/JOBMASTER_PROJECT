@@ -1,0 +1,168 @@
+<div class="container mx-auto px-2 md:px-4 lg:px-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <div class="bg-gradient-to-br from-indigo-500 to-sky-400 rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
+      <div class="flex flex-col justify-between mb-6">
+        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">TOTAL TICKETS</div>
+        <div class="flex items-center">
+          <i class='bx bxs-coupon mr-2 text-3xl md:text-5xl' style='color:#fffbfb'></i>
+          <div class="text-lg md:text-3xl font-medium text-white">{{incidences.length}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-emerald-600 to-emerald-400 rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
+      <div class="flex flex-col justify-between mb-6">
+        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">SOLUCIONADAS</div>
+        <div class="flex items-center">
+          <i class='bx bx-list-check mr-2 text-3xl md:text-5xl' style='color:#fffbfb'></i>
+          <div class="text-lg md:text-3xl font-medium text-white">{{completed}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-rose-500 to-rose-400 p-6 shadow-md rounded-md shadow-black/5">
+      <div class="flex flex-col justify-between mb-6">
+        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">PENDIENTES</div>
+        <div class="flex items-center">
+          <i class='bx bxs-file mr-2 text-3xl md:text-5xl' style='color:#fffbfb'></i>
+          <div class="text-lg md:text-3xl font-medium text-white">{{pending}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Filter Button and Incidencias Heading -->
+<div class="flex flex-wrap items-center justify-between mb-4 px-2 w-full space-y-4 lg:space-y-0">
+  <h2 class="text-lg md:text-xl font-bold">Incidencias</h2>
+
+  <form class="relative flex-grow md:flex-grow-0 md:w-auto md:ml-4 w-full" (submit)="searchIncidences($event)">
+    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Buscar</label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+        </svg>
+      </div>
+      <input [(ngModel)]="searchQuery" name="searchQuery" type="search" id="default-search" class="block w-full pl-10 pr-24 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-400 focus:border-green-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-400 dark:focus:border-green-400" placeholder="Buscar por nombre" required />
+      <button type="submit" class="absolute right-0 top-0 h-full text-white bg-green-400 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-400 font-medium rounded-r-lg text-sm px-4 py-2 dark:bg-green-400 dark:hover:bg-green-500 dark:focus:ring-green-400">Buscar</button>
+    </div>
+  </form>
+
+  <div class="relative ml-auto w-full md:w-auto">
+    <button class="flex items-center bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-lg w-full md:w-auto" (click)="toggleDropdown()">
+      <span><i class='bx bx-filter text-xl'></i> Filtros</span>
+    </button>
+      <div *ngIf="showDropdown" class="absolute right-0 mt-1 bg-white border border-gray-300 rounded-lg py-2 px-4 w-64 z-10">
+        <div class="mb-2">
+          <label class="block text-gray-700 font-bold mb-1">Estado</label>
+          <div class="flex flex-wrap">
+            <div class="flex items-center mb-1 mr-4">
+              <input type="checkbox" [(ngModel)]="filterStatus.pending" class="mr-2">
+              <span>Pendientes</span>
+            </div>
+            <div class="flex items-center mb-1">
+              <input type="checkbox" [(ngModel)]="filterStatus.completed" class="mr-2">
+              <span>Completadas</span>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="block text-gray-700 font-bold mb-1">Tipo</label>
+          <div class="flex flex-wrap">
+            <div class="flex items-center mb-1 mr-4" *ngFor="let type of incidentTypes">
+              <input type="checkbox" [(ngModel)]="filterTypes[type]" class="mr-2">
+              <span>{{ translateType(type) }}</span>
+            </div>
+          </div>
+        </div>
+        <button class="w-full bg-green-400 hover:bg-green-500 text-white font-bold py-2 rounded mb-2"  (click)="applyFilters()" >Aplicar Filtros</button>
+        <button class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded" (click)="clearFilters()">deshabilitar filtro</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Section Incidents -->
+  <div class="w-full px-2 py-2">
+    <div *ngIf="isError" class="bg-white rounded-xl shadow-lg p-4 mb-5 overflow-x-auto border border-green-400">
+      <div class="text-red-600 font-bold mb-4">
+        Error al cargar las incidencias. Por favor, inténtelo de nuevo más tarde.
+      </div>
+    </div>
+
+    <div *ngIf="!isError" class="bg-white border border-green-400 rounded-xl p-4 mb-8">
+      <div class="overflow-x-auto">
+        <table class="w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">NOMBRE</th>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">TIPO</th>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">DESCRIPCIÓN</th>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">FECHA</th>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">ESTADO</th>
+              <th scope="col" class="px-6 py-3 text-xs font-bold tracking-wider text-left text-gray-500 uppercase">ACCIÓN</th>
+            </tr>
+          </thead>
+
+          <tbody class="bg-white divide-y divide-gray-200">
+            <ng-container *ngIf="incidences.length > 0; else noIncidences">
+              <tr *ngFor="let incident of incidences | paginate: { itemsPerPage: 7, currentPage: p }" class="transition-all hover:bg-gray-100 hover:shadow-lg">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900 font-bold">{{ incident.employee?.name }} {{ incident.employee?.surname }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ translateType(incident.incident_type) }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">
+                    <ng-container *ngFor="let line of splitDescription(incident.description, 100)">
+                      {{ line }}<br>
+                    </ng-container>
+                  </div>
+                </td>
+
+
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ incident.date }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" [checked]="incident.status === 'completed'" (change)="toggleCompletion(incident)" class="hidden">
+                    <span class="relative">
+                      <span [ngClass]="{ 'bg-red-300': incident.status === 'pending', 'bg-green-300': incident.status === 'completed' }" class="block w-14 h-8 rounded-full shadow-inner"></span>
+                      <span [ngClass]="{ 'translate-x-full bg-green-500': incident.status === 'completed', 'bg-red-500': incident.status === 'pending' }" class="absolute left-0 top-0 mt-1 ml-1 w-6 h-6 rounded-full shadow-md transition"></span>
+                    </span>
+                    <span class="ml-3 text-gray-700" [ngClass]="{ 'text-custom-500': incident.status === 'completed', 'text-custom-600': incident.status === 'pending' }">{{ incident.status === 'completed' ? 'Completada' : 'Pendiente' }}</span>
+                  </label>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button (click)="openDeleteModal(incident.id)" class="inline-flex items-center text-sm font-medium text-red-500 hover:text-red-700 p-1.5 text-center rounded-lg focus:outline-none">
+            <i class='bx bx-trash text-xl text-red-600'></i>
+          </button>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-template #noIncidences>
+              <tr>
+                <td colspan="6" class="py-4 text-center">No hay incidencias disponibles.</td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+        <pagination-controls (pageChange)="p = $event" previousLabel="Anterior" nextLabel="Siguiente" class="custom-pagination flex justify-end my-4" [maxSize]="10" [directionLinks]="true" [autoHide]="false" previousClass="bg-gray-300 px-4 py-2 rounded-l" nextClass="bg-gray-300 px-4 py-2 rounded-r" directionLinkClass="bg-gray-300 px-4 py-2 rounded" ellipses="..." ellipsesClass="bg-gray-300 px-4 py-2" pageLinkClass="text-blue-400 px-4 py-2 rounded" [responsive]="true"></pagination-controls>
+      </div>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+</div>
+<!-- Delete Confirmation Modal -->
+<app-delete-confirmation-modal
+  [showConfirmationModal]="showConfirmationModal"
+  (closeModalEvent)="closeDeleteModal()"
+  (confirmDelete)="confirmDeletion()"
+></app-delete-confirmation-modal>
+
+
+<app-success-alert *ngIf="showSuccessAlert" [message]="successMessage"></app-success-alert>

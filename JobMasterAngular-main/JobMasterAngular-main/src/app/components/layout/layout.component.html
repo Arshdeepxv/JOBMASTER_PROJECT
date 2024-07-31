@@ -1,0 +1,14 @@
+<div class="flex">
+  <app-sidebar class="w-55"></app-sidebar>
+  <div class="flex-grow bg-custom-700">
+    <div class="w-full bg-gray-100 p-4 rounded-xl mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-lg font-bold">Hola {{ nombreUsuario  }} </h1>
+          <p class="text-sm">{{ fechaHoraActual  }} </p>
+        </div>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="container mx-auto mt-8">
+  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="mb-4">
+      <h2 class="text-xl font-bold mb-4">Crear Incidencia</h2>
+    </div>
+    <form [formGroup]="incidentForm" (ngSubmit)="addIncident()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
+            Tipo de Incidencia
+          </label>
+          <select formControlName="incident_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="type">
+            <option value="">Selecciona el tipo de incidencia</option>
+            <option value="Delay">Retraso</option>
+            <option value="Absence">Ausencia</option>
+            <option value="password_change">Cambio de contraseña</option>
+            <option value="Request">Solicitud</option>
+            <option value="Complaint">Reclamacion</option>
+            <option value="Others">Otros</option>
+          </select>
+          <div *ngIf="incidentForm.get('incident_type')?.invalid && (incidentForm.get('incident_type')?.touched || incidentForm.get('incident_type')?.value)" class="text-red-500 text-sm mt-1">Tipo de incidencia es requerido</div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="date">
+            Fecha de Incidencia
+          </label>
+          <input formControlName="date" readonly class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" [value]="currentDateFormatted">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
+          Descripción
+        </label>
+        <textarea formControlName="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Descripción de la incidencia" maxlength="300"></textarea>
+        <div *ngIf="incidentForm.get('description')?.invalid && (incidentForm.get('description')?.touched || incidentForm.get('description')?.value)" class="text-red-500 text-sm mt-1">Descripción es requerida</div>
+      </div>
+      <div class="flex justify-start">
+        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Crear Incidencia
+        </button>
+        <button type="button" class="bg-gray-500 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-4" (click)="openModal()">Cancelar</button>
+      </div>
+    </form>
+
+    <div *ngIf="!areAllFieldsFilled() && (incidentForm.get('incident_type')?.touched || incidentForm.get('description')?.touched || incidentForm.get('date')?.touched)" class="text-red-500 text-sm mt-1">Por favor rellena todos los campos.</div>
+
+  </div>
+</div>
+<app-cancelmodal (confirm)="confirmCancelEdit()" (cancel)="closeModal()"></app-cancelmodal>
+
